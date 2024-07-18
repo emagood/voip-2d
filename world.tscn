@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://d0wmk38bhdvwl"]
+
+[ext_resource type="Script" path="res://world.gd" id="1_0wfp1"]
+
+[node name="world" type="Node2D"]
+script = ExtResource("1_0wfp1")
+
+[node name="players" type="Node2D" parent="."]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="players"]
+_spawnable_scenes = PackedStringArray("res://character.tscn")
+spawn_path = NodePath("..")
+
+[node name="Camera2D" type="Camera2D" parent="."]
