@@ -21,6 +21,7 @@ func setupAudio(id):
 		input.play()
 		index = AudioServer.get_bus_index("Record")
 		effect = AudioServer.get_bus_effect(index, 0)
+		#print("called from: %s; effect: %s; playback: %s" % [id, effect, get_node(outputPath).get_path()])
 
 func _process(delta):
 	if multiplayer.is_server():
