@@ -7,3 +7,4 @@ script = ExtResource("1_6tp3t")
 
 [node name="input" type="AudioStreamPlayer" parent="."]
 bus = &"Record"
+playback_type = 2
