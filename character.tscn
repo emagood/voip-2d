@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://da6j6124gu67a" path="res://audioManager.tscn" id="1_a207m"]
 [ext_resource type="Script" path="res://character.gd" id="1_jdxc6"]
 
-[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_jg0he"]
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_ur55u"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_mqgo7"]
 properties/0/path = NodePath(".:position")
@@ -17,12 +17,18 @@ script = ExtResource("1_jdxc6")
 outputPath = NodePath("../AudioStreamPlayer2D")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = SubResource("AudioStreamGenerator_jg0he")
+stream = SubResource("AudioStreamGenerator_ur55u")
 autoplay = true
+max_distance = 5.0
+max_polyphony = 2
+playback_type = 2
 
 [node name="Label" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.045
+delta_interval = 0.18
 replication_config = SubResource("SceneReplicationConfig_mqgo7")
+visibility_update_mode = 1
