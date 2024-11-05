@@ -21,14 +21,11 @@ stream = SubResource("AudioStreamGenerator_ur55u")
 autoplay = true
 max_distance = 5.0
 max_polyphony = 2
-playback_type = 2
 
 [node name="Label" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_interval = 0.045
-delta_interval = 0.18
 replication_config = SubResource("SceneReplicationConfig_mqgo7")
 visibility_update_mode = 1

@@ -6,7 +6,7 @@ var effect: AudioEffectCapture
 @onready var playbackNode = $"../AudioStreamPlayer2D"
 var playback: AudioStreamGeneratorPlayback
 @export var outputPath: NodePath
-var inputThreshold: float = 0.005
+var inputThreshold: float = 0.1
 var receiveBuffer:= PackedFloat32Array()
 
 func _ready():
@@ -26,11 +26,11 @@ func setupAudio(id):
 
 func _process(delta):
 	if multiplayer.is_server():
+		return
+	#if Input.is_action_pressed("rec") and is_multiplayer_authority():
+	elif is_multiplayer_authority():
 		processMic()
-	
-	elif is_multiplayer_authority() and !multiplayer.is_server():
-		processMic()
-		processVoice()
+	processVoice()
 
 
 func processMic():
@@ -40,13 +40,12 @@ func processMic():
 		return
 	var StereoData: PackedVector2Array = effect.get_buffer(effect.get_frames_available())
 	
-	if StereoData.size() > 1020:
+	if StereoData.size() >= 128:
 		var data = PackedFloat32Array()
 		data.resize(StereoData.size())
-		var maxAmplitude: float = 0.01
-		
+		var maxAmplitude: float = 0.03
 		for i in range(StereoData.size()):
-			var value = StereoData[i].x 
+			var value = StereoData[i].x + StereoData[i].y
 			maxAmplitude = max(value, maxAmplitude)
 			data[i] = value
 	
@@ -54,34 +53,20 @@ func processMic():
 	
 		if maxAmplitude < inputThreshold:
 			return
-		var size_array = 0
-		var tipo = 3
-		## compress
+	
+	
 		var bite = data.to_byte_array() #packarray from packarray32float
-		var bite_3 = bite
-		var bite_0 = bite
-		size_array = bite.size()
+		prints(bite.size())
+
 		var bite2 = bite.compress(1)# comprimido deflate mode 1
-		var bite3 = bite_3.compress(3)# comprimido deflate mode 3
-		var bite4 = bite_0.compress(2)# comprimido deflate mode 2
+		data = bite2
 	
 	
+
 	
-		if bite2.size() <= bite3.size() and bite4.size():
-			data = bite2
-			tipo = 1
-		elif bite2.size() >= bite3.size() and bite4.size():
-			data = bite3
-			tipo = 2
-			prints(data.size()," bite3")
-		else :
-			tipo = 3
-			data = bite4
-			prints(data.size()," bite4")
-	
-	
-	
-		sendData.rpc(data,tipo,size_array , self.get_path())
+		prints(data.size(), "  size data compress")
+		sendData.rpc(data, self.get_path())
+		#sendData.rpc(data, self.get_path())
 
 
 
@@ -89,7 +74,7 @@ func processVoice():
 	if multiplayer.is_server():
 		prints("proces voies server warring")
 		
-	if receiveBuffer.size() <= 1024:
+	if receiveBuffer.size() < 1:
 		return
 	
 	for i in range(min(playback.get_frames_available(), receiveBuffer.size())):
@@ -97,9 +82,8 @@ func processVoice():
 		receiveBuffer.remove_at(0)
 
 
-
 @rpc("any_peer", "call_remote")
-func sendData(data, tipo,size_array , audioManagerPath: NodePath):
+func sendData(data , audioManagerPath: NodePath):
 
 	###if multiplayer.is_server():
 		#prints("escuxhoi")
@@ -107,18 +91,14 @@ func sendData(data, tipo,size_array , audioManagerPath: NodePath):
 	
 	var decomp_dynamic: PackedByteArray
 	#tipo = "FASTLZ:0" ,"DEFLATE:1" ,"ZSTD:2", "GZIP:3"
-	if tipo == 1 :
-		decomp_dynamic = data.decompress_dynamic(-1, 1) 
-	if tipo == 2:
-		decomp_dynamic = data.decompress_dynamic(-1, 3) 
-	elif tipo == 3:
-		decomp_dynamic = data.decompress_dynamic(size_array, 2)
+	
+	decomp_dynamic = data.decompress_dynamic(-1, 1) 
+
 	
 	
 	# desompress dynamic
 	
-	var bit_array:Array = Array(decomp_dynamic)# combert packed array a array
-	data = PackedFloat32Array(bit_array)# combert array a packed float 32
-	
+	#var bit_array:Array = Array(decomp_dynamic)# combert packed array a array
+	data = decomp_dynamic.to_float32_array()
+	#data = PackedFloat32Array(bit_array)# combert array a packed float 32
 	get_node(audioManagerPath).receiveBuffer.append_array(data)
-	
