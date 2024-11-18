@@ -30,7 +30,7 @@ func _process(delta):
 	#if Input.is_action_pressed("rec") and is_multiplayer_authority():
 	elif is_multiplayer_authority():
 		processMic()
-	processVoice()
+	
 
 
 func processMic():
@@ -102,3 +102,4 @@ func sendData(data , audioManagerPath: NodePath):
 	data = decomp_dynamic.to_float32_array()
 	#data = PackedFloat32Array(bit_array)# combert array a packed float 32
 	get_node(audioManagerPath).receiveBuffer.append_array(data)
+	processVoice()
