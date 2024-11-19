@@ -44,4 +44,9 @@ Para utilizar la herramienta de transmisión de voz:
 2. Configura la dirección IP y el puerto en el script correspondiente.
 3. Ejecuta la escena principal para iniciar la transmisión de voz.
 
+## info 
+en intervalos medios de omprenssion 
+Tasa de bits original = 130 kbps
+Tasa de bits comprimida = 30 kbps
 
+Factor de compresion ≈ 4.33
